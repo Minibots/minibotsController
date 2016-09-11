@@ -1,3 +1,4 @@
+//#define REVERSE_PINS_ALLOWED
 #include <ESP8266WiFi.h>
 
 const char WifiSSID[] = "Minibot";
@@ -5,6 +6,12 @@ const char WifiPassword[] = "awesomeRobot";
 
 const char LEFT_FORWARD_MOTOR_PIN = 2;
 const char RIGHT_FORWARD_MOTOR_PIN = 0;
+
+#ifdef REVERSE_PINS_ALLOWED
+const char LEFT_REVERSE_MOTOR_PIN = 3;
+const char RIGHT_REVERSE_MOTOR_PIN = 1;
+#endif //REVERSE_PINS_ALLOWED
+
 const char PACKET_SIZE = 100;
 
 // The code in between the tags below will be deleted when compress.js is called. compress.js uses line numbers. Ensure that the tags below are on their own lines.
@@ -29,7 +36,15 @@ void setup()
 
   pinMode(RIGHT_FORWARD_MOTOR_PIN, OUTPUT);
   digitalWrite(RIGHT_FORWARD_MOTOR_PIN, LOW);
+  
+#ifdef REVERSE_PINS_ALLOWED
+  pinMode(LEFT_REVERSE_MOTOR_PIN, OUTPUT);
+  digitalWrite(LEFT_REVERSE_MOTOR_PIN, LOW);
 
+  pinMode(RIGHT_REVERSE_MOTOR_PIN, OUTPUT);
+  digitalWrite(RIGHT_REVERSE_MOTOR_PIN, LOW);
+#endif //REVERSE_PINS_ALLOWED
+  
 }
 
 void loop()
@@ -54,9 +69,33 @@ void loop()
   double rightMotorPower = getDoubleParameter("right", url);
 
   Serial.println("Left: " + (String)leftMotorPower + " Right: " + (String)rightMotorPower);
-
+  
+#ifndef REVERSE_PINS_ALLOWED
   setPinPower(LEFT_FORWARD_MOTOR_PIN, leftMotorPower);
   setPinPower(RIGHT_FORWARD_MOTOR_PIN, rightMotorPower);
+#else
+  if (leftMotorPower > 0)
+  {
+    setPinPower(LEFT_FORWARD_MOTOR_PIN, leftMotorPower);
+    setPinPower(LEFT_REVERSE_MOTOR_PIN, 0);
+  }
+  else
+  {
+    setPinPower(LEFT_FORWARD_MOTOR_PIN, 0);
+    setPinPower(LEFT_REVERSE_MOTOR_PIN, -1*leftMotorPower);
+  }
+
+  if (rightMotorPower > 0)
+  {
+    setPinPower(RIGHT_FORWARD_MOTOR_PIN, rightMotorPower);
+    setPinPower(RIGHT_REVERSE_MOTOR_PIN, 0);
+  }
+  else
+  {
+    setPinPower(RIGHT_FORWARD_MOTOR_PIN, 0);
+    setPinPower(RIGHT_REVERSE_MOTOR_PIN, -1*rightMotorPower);
+  }
+#endif
 
   client.flush();
   if (url == "/")
