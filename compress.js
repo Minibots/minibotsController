@@ -11,6 +11,8 @@ new Inliner('index.html', function (error, html)
     while (html.indexOf('"') != -1)
 	      html = html.replace('"',"'");
 
+    console.log("The compressed code is " + html.length + " bytes.")
+    
     fs.writeFile("compressed.html", html, function(err) {
     		if(err)
             console.log(err);
@@ -25,6 +27,7 @@ new Inliner('index.html', function (error, html)
                 console.log(err);
             //console.log("Compressed!!! Checkout compressed.html");
         });
+        
     });
 });
 

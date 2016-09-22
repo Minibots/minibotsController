@@ -1,5 +1,5 @@
 {
-  "name": "Minibots Controller",
+  "name": "MinibotsController",
   "version": "1.0.0",
   "description": "See README.md",
   "main": "server.js",
@@ -7,8 +7,7 @@
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "html-minifier": "^3.0.1",
-    "inliner": "^1.8.2",
-    "request": "^2.69.0"
+    "inliner": "^1.8.2"
   },
   "scripts": {
     "test": "nodejs server.js",
